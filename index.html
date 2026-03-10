@@ -521,7 +521,9 @@ PACKAGE.JSON CONTENT:
         <div class="z-10 flex flex-col items-center">
             <!-- Profile Picture with 3D Morphing Animation -->
             <div class="mb-8 float-3d">
-                <img src="my-photo.jpg" alt="Adeel" class="profile-base anim-morph" style="width: 220px; height: 220px; border-width: 5px; box-shadow: 0 0 40px rgba(46, 204, 113, 0.5);">
+                <img src="my-photo.jpg" alt="Adeel" class="profile-base anim-morph" 
+                     onerror="this.src='https://picsum.photos/seed/adeel/400/400'"
+                     style="width: 220px; height: 220px; border-width: 5px; box-shadow: 0 0 40px rgba(46, 204, 113, 0.5); object-fit: cover;">
             </div>
 
             <p class="text-[#2ecc71] font-mono text-sm tracking-[0.3em] uppercase mb-4 reveal reveal-up">Welcome to my portfolio</p>
@@ -706,11 +708,7 @@ PACKAGE.JSON CONTENT:
             </div>
 
             <div id="projects-list" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-container">
-                <!-- Add Project Button -->
-                <div onclick="openModal('project')" class="p-6 rounded-2xl border border-dashed border-gray-800 flex flex-col items-center justify-center min-h-[200px] text-gray-600 hover:border-[#2ecc71] transition-colors cursor-pointer group">
-                    <i data-lucide="plus" class="mb-2 group-hover:scale-125 transition-transform"></i>
-                    <p class="text-sm font-medium">Add New Project</p>
-                </div>
+                <!-- Dynamic projects will be injected here -->
             </div>
         </section>
 
@@ -750,19 +748,7 @@ PACKAGE.JSON CONTENT:
                     <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="database" size="20"></i></div>
                     <div><h4 class="text-sm font-bold text-white">Data Analysis</h4><p class="text-[10px] text-gray-500">Microsoft & Simplilearn</p></div>
                 </div>
-                <!-- Placeholder Slots -->
-                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
-                    <i data-lucide="plus" size="16"></i>
-                </div>
-                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
-                    <i data-lucide="plus" size="16"></i>
-                </div>
-                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
-                    <i data-lucide="plus" size="16"></i>
-                </div>
-                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
-                    <i data-lucide="plus" size="16"></i>
-                </div>
+                <!-- Dynamic certificates will be injected here -->
             </div>
         </section>
 
@@ -967,22 +953,16 @@ PACKAGE.JSON CONTENT:
                             </div>
                             <p class="text-gray-400 text-sm mb-6 flex-grow">${item.desc}</p>
                         </div>
-                        <button onclick="deleteItem('${item.id}')" class="absolute -top-2 -right-2 p-2 bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10">
-                            <i data-lucide="trash-2" size="14"></i>
-                        </button>
                     </div>`;
-                    projectList.insertBefore(div, projectList.lastElementChild);
+                    projectList.appendChild(div);
                 } else {
                     div.innerHTML = `<div class="relative group h-full">
                         <div class="p-4 rounded-xl bg-[#001f3f]/50 border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all h-full">
                             <div class="p-2 rounded-lg bg-[#00f2ff]/10 text-[#00f2ff]"><i data-lucide="award" size="20"></i></div>
                             <div><h4 class="text-sm font-bold text-white">${item.name}</h4><p class="text-[10px] text-gray-500">${item.desc}</p></div>
                         </div>
-                        <button onclick="deleteItem('${item.id}')" class="absolute -top-2 -right-2 p-2 bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10">
-                            <i data-lucide="trash-2" size="14"></i>
-                        </button>
                     </div>`;
-                    certList.insertBefore(div, certList.lastElementChild);
+                    certList.appendChild(div);
                 }
             });
             lucide.createIcons();
