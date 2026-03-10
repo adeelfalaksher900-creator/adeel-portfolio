@@ -1,0 +1,14 @@
+{
+  "name": "adeel-portfolio",
+  "version": "1.0.0",
+  "description": "Adeel Falak Sher Portfolio",
+  "scripts": {
+    "dev": "npx serve -l 3000 .",
+    "start": "npx serve -l 3000 .",
+    "build": "echo 'No build needed for static site'",
+    "lint": "echo 'No lint needed for static site'"
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}

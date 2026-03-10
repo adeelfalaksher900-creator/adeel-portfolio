@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<!-- 
+PACKAGE.JSON CONTENT:
+{
+  "name": "adeel-portfolio",
+  "version": "1.0.0",
+  "description": "Adeel Falak Sher Portfolio",
+  "scripts": {
+    "dev": "npx serve -l 3000 .",
+    "start": "npx serve -l 3000 ."
+  },
+  "dependencies": {
+    "serve": "^14.2.4"
+  }
+}
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADEEL FALAK SHER | Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* --- CUSTOM STYLES & ANIMATIONS --- */
+        :root {
+            --accent-blue: #00f2ff;
+            --dark-blue: #000b1e;
+            --card-blue: rgba(0, 31, 63, 0.8);
+            --text-blue: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-blue);
+            color: #f8fafc;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at center, #001f3f 0%, #000b1e 100%);
+            background-attachment: fixed;
+        }
+
+        /* 3D Character Styles */
+        .character-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50px;
+            z-index: 100;
+            perspective: 1000px;
+            transition: left 0.5s ease-out;
+            pointer-events: none;
+        }
+
+        .character {
+            width: 60px;
+            height: 100px;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+
+        .char-head {
+            width: 30px;
+            height: 30px;
+            background: #ffdbac;
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            left: 15px;
+            transform-style: preserve-3d;
+            border: 1px solid #000;
+        }
+
+        .char-body {
+            width: 40px;
+            height: 50px;
+            background: #0047ab;
+            position: absolute;
+            top: 30px;
+            left: 10px;
+            transform-style: preserve-3d;
+            border: 1px solid #000;
+        }
+
+        .char-arm {
+            width: 10px;
+            height: 40px;
+            background: #0047ab;
+            position: absolute;
+            top: 30px;
+            transform-origin: top center;
+            transition: transform 0.5s;
+        }
+
+        .arm-left { left: 0; }
+        .arm-right { right: 0; }
+
+        .char-leg {
+            width: 12px;
+            height: 30px;
+            background: #001f3f;
+            position: absolute;
+            top: 80px;
+            transform-origin: top center;
+        }
+
+        .leg-left { left: 12px; animation: walkLeg 1s infinite alternate; }
+        .leg-right { right: 12px; animation: walkLeg 1s infinite alternate-reverse; }
+
+        @keyframes walkLeg {
+            from { transform: rotateX(-20deg); }
+            to { transform: rotateX(20deg); }
+        }
+
+        .cardboard {
+            position: absolute;
+            bottom: 110px;
+            left: -50px;
+            width: 160px;
+            background: #d2b48c;
+            border: 4px solid #8b4513;
+            padding: 10px;
+            color: #4b250a;
+            font-weight: 800;
+            text-align: center;
+            font-size: 14px;
+            opacity: 0;
+            transform: scale(0) translateY(20px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .character.showing-card .cardboard {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .character.showing-card .arm-left { transform: rotateZ(150deg); }
+        .character.showing-card .arm-right { transform: rotateZ(-150deg); }
+        .character.showing-card .char-leg { animation-play-state: paused; }
+        .character.showing-card { transform: rotateY(0deg); }
+
+        @keyframes wave {
+            0%, 100% { transform: rotateZ(-150deg); }
+            50% { transform: rotateZ(-110deg); }
+        }
+
+        .character.waving .arm-right {
+            animation: wave 0.6s infinite ease-in-out;
+        }
+
+        /* Update existing colors to blue theme */
+        .text-[#2ecc71] { color: var(--accent-blue) !important; }
+        .bg-[#2ecc71] { background-color: var(--accent-blue) !important; }
+        .border-[#2ecc71] { border-color: var(--accent-blue) !important; }
+        .from-[#2ecc71] { --tw-gradient-from: var(--accent-blue) !important; }
+        .to-[#27ae60] { --tw-gradient-to: #007bff !important; }
+        .bg-[#2ecc71]\/10 { background-color: rgba(0, 242, 255, 0.1) !important; }
+        .shadow-\[0_0_20px_rgba\(46\,204\,113\,0\.2\)\] { shadow: 0 0 20px rgba(0, 242, 255, 0.2) !important; }
+        .typing-cursor::after { color: var(--accent-blue); }
+        .skill-progress { background-color: var(--accent-blue) !important; }
+        .face { border-color: var(--accent-blue); color: var(--accent-blue); }
+        .p-bottom { border-color: var(--accent-blue); }
+        .ring { border-color: var(--accent-blue); }
+        .profile-base { border-color: var(--accent-blue); box-shadow: 0 0 40px rgba(0, 242, 255, 0.5); }
+        
+        /* Global Text Color Overrides */
+        .text-gray-400 { color: #cbd5e1 !important; }
+        .text-gray-300 { color: #e2e8f0 !important; }
+        .text-gray-500 { color: #94a3b8 !important; }
+        .text-gray-600 { color: #64748b !important; }
+
+        /* AI Generated Background Elements */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+            background-image: url('https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            filter: blur(10px);
+        }
+
+        /* Enhanced Scroll Reveal Animations - "Falling" Effect */
+        .reveal {
+            opacity: 0;
+            transition: all 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            perspective: 2000px;
+            will-change: transform, opacity;
+        }
+
+        .reveal-up { transform: translateY(200px) rotateX(-45deg) scale(0.8) translateZ(-200px); }
+        .reveal-down { transform: translateY(-200px) rotateX(45deg) scale(0.8) translateZ(-200px); }
+        .reveal-left { transform: translateX(-200px) rotateY(45deg) scale(0.8) translateZ(-200px); }
+        .reveal-right { transform: translateX(200px) rotateY(-45deg) scale(0.8) translateZ(-200px); }
+        .reveal-zoom { transform: scale(0.3) rotateZ(10deg) translateZ(-500px); }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translate(0) rotateX(0) rotateY(0) translateZ(0) scale(1);
+        }
+
+        /* Moving/Floating Animation for Sections - More Dynamic */
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(30px, -40px) rotate(1deg); }
+            40% { transform: translate(-40px, 20px) rotate(-1deg); }
+            60% { transform: translate(40px, 40px) rotate(1.5deg); }
+            80% { transform: translate(-20px, -30px) rotate(-0.5deg); }
+        }
+
+        .moving-section {
+            animation: drift 25s ease-in-out infinite;
+        }
+        
+        /* Offset variations for more "random" movement */
+        .moving-section:nth-child(odd) { animation-duration: 30s; animation-delay: -5s; }
+        .moving-section:nth-child(even) { animation-duration: 22s; animation-delay: -2s; }
+        .moving-section:nth-child(3n) { animation-direction: reverse; }
+
+        /* Staggered Children Animation */
+        .stagger-container > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .stagger-container.active > *:nth-child(1) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
+        .stagger-container.active > *:nth-child(2) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
+        .stagger-container.active > *:nth-child(3) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
+        .stagger-container.active > *:nth-child(4) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+        .stagger-container.active > *:nth-child(5) { transition-delay: 0.5s; opacity: 1; transform: translateY(0); }
+        .stagger-container.active > *:nth-child(6) { transition-delay: 0.6s; opacity: 1; transform: translateY(0); }
+
+        /* Fade-in Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Typing Cursor Animation */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+            color: var(--emerald);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Skill Bar Animation - Triggered by JS */
+        .skill-progress {
+            width: 0%;
+            transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 3D Floating Animation */
+        .float-3d {
+            animation: float 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(0) rotateY(0); }
+            50% { transform: translateY(-20px) rotateX(10deg) rotateY(10deg); }
+        }
+
+        /* 3D Cube Styles */
+        .cube-wrapper {
+            perspective: 800px;
+            width: 100px;
+            height: 100px;
+        }
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 10s infinite linear;
+        }
+        .face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid var(--emerald);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--emerald);
+            font-size: 12px;
+            backdrop-filter: blur(2px);
+        }
+        .front  { transform: translateZ(50px); }
+        .back   { transform: rotateY(180deg) translateZ(50px); }
+        .right  { transform: rotateY(90deg) translateZ(50px); }
+        .left   { transform: rotateY(-90deg) translateZ(50px); }
+        .top    { transform: rotateX(90deg) translateZ(50px); }
+        .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+        @keyframes rotateCube {
+            from { transform: rotateX(0) rotateY(0); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* 3D Pyramid for Projects */
+        .pyramid-wrapper {
+            perspective: 800px;
+            width: 150px;
+            height: 150px;
+        }
+        .pyramid {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotatePyramid 12s infinite linear;
+        }
+        .p-face {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 75px solid transparent;
+            border-right: 75px solid transparent;
+            border-bottom: 130px solid rgba(46, 204, 113, 0.1);
+            border-bottom-color: rgba(46, 204, 113, 0.2);
+            transform-origin: 50% 100%;
+        }
+        .p-front  { transform: rotateX(30deg) translateZ(0); }
+        .p-back   { transform: rotateY(180deg) rotateX(30deg); }
+        .p-right  { transform: rotateY(90deg) rotateX(30deg); }
+        .p-left   { transform: rotateY(-90deg) rotateX(30deg); }
+        .p-bottom { 
+            width: 150px; 
+            height: 150px; 
+            background: rgba(46, 204, 113, 0.1); 
+            border: 1px solid var(--emerald);
+            transform: rotateX(-90deg) translateY(-75px);
+            border-radius: 0;
+        }
+
+        @keyframes rotatePyramid {
+            from { transform: rotateY(0); }
+            to { transform: rotateY(360deg); }
+        }
+
+        /* 3D Ring for Certifications */
+        .ring-wrapper {
+            perspective: 800px;
+            width: 150px;
+            height: 150px;
+        }
+        .ring {
+            width: 100px;
+            height: 100px;
+            border: 10px solid var(--emerald);
+            border-radius: 50%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateRing 8s infinite linear;
+            opacity: 0.3;
+        }
+        @keyframes rotateRing {
+            0% { transform: rotateX(0) rotateY(0); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* Profile Pic Animations */
+        .profile-base {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--emerald);
+            padding: 4px;
+            background: var(--card-bg);
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
+        }
+
+        .anim-morph { animation: morph 8s ease-in-out infinite; }
+        @keyframes morph {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+        }
+
+        .anim-spin { animation: spin-slow 10s linear infinite; }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .anim-bounce { animation: bounce-slow 3s ease-in-out infinite; }
+        @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        .anim-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(46, 204, 113, 0.2); } 50% { box-shadow: 0 0 40px rgba(46, 204, 113, 0.5); } }
+
+        /* Section Specific Animations */
+        .section-slide-left { transform: translateX(-50px); opacity: 0; transition: all 1s ease; }
+        .section-slide-left.visible { transform: translateX(0); opacity: 1; }
+
+        .section-slide-right { transform: translateX(50px); opacity: 0; transition: all 1s ease; }
+        .section-slide-right.visible { transform: translateX(0); opacity: 1; }
+
+        .section-zoom { transform: scale(0.9); opacity: 0; transition: all 1s ease; }
+        .section-zoom.visible { transform: scale(1); opacity: 1; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #0a0a0a;
+            margin: 10% auto;
+            padding: 30px;
+            border: 1px solid var(--accent-blue);
+            width: 90%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            position: relative;
+        }
+
+        .project-card {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--accent-blue) !important;
+            box-shadow: 0 20px 40px -10px rgba(0, 242, 255, 0.3);
+        }
+
+        .project-card:hover .external-link-icon {
+            transform: translate(3px, -3px) scale(1.2);
+            color: var(--accent-blue);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--emerald);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--emerald);
+            color: black;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--emerald);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--emerald); }
+    </style>
+</head>
+<body class="selection:bg-[#2ecc71]/30 selection:text-[#2ecc71]">
+
+    <!-- --- 3D CHARACTER ELEMENT --- -->
+    <div id="character-box" class="character-container">
+        <div id="main-char" class="character">
+            <div class="cardboard" id="char-cardboard">SECTION NAME</div>
+            <div class="char-head"></div>
+            <div class="char-body"></div>
+            <div class="char-arm arm-left"></div>
+            <div class="char-arm arm-right"></div>
+            <div class="char-leg leg-left"></div>
+            <div class="char-leg leg-right"></div>
+        </div>
+    </div>
+
+    <div class="bg-pattern"></div>
+
+    <!-- --- HERO SECTION --- -->
+    <header class="relative h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#2ecc71]/5 blur-[150px] rounded-full pointer-events-none"></div>
+        
+        <div class="z-10 flex flex-col items-center">
+            <!-- Profile Picture with 3D Morphing Animation -->
+            <div class="mb-8 float-3d">
+                <img src="my-photo.jpg" alt="Adeel" class="profile-base anim-morph" style="width: 220px; height: 220px; border-width: 5px; box-shadow: 0 0 40px rgba(46, 204, 113, 0.5);">
+            </div>
+
+            <p class="text-[#2ecc71] font-mono text-sm tracking-[0.3em] uppercase mb-4 reveal reveal-up">Welcome to my portfolio</p>
+            <h1 class="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 reveal reveal-up" style="transition-delay: 0.2s;">
+                ADEEL <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#2ecc71] to-[#27ae60]">FALAK SHER</span>
+            </h1>
+            <div class="h-8">
+                <p id="typing-text" class="text-xl md:text-2xl font-light text-gray-400 typing-cursor"></p>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 animate-bounce">
+            <div class="w-6 h-10 border-2 border-gray-700 rounded-full flex justify-center p-1">
+                <div class="w-1 h-2 bg-[#2ecc71] rounded-full"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-20 space-y-40">
+
+        <!-- --- EDUCATION SECTION --- -->
+        <section id="education" class="reveal reveal-left moving-section">
+            <div class="flex items-center justify-between mb-12">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-xl bg-[#2ecc71]/10 text-[#2ecc71] float-3d">
+                        <i data-lucide="graduation-cap"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white">Academic Excellence</h2>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 stagger-container">
+                <div class="p-8 rounded-3xl bg-[#1a1a1a] border border-gray-800 hover:scale-105 transition-transform relative overflow-hidden group">
+                    <span class="px-3 py-1 rounded-full bg-[#2ecc71]/10 text-[#2ecc71] text-[10px] font-bold uppercase tracking-widest mb-4 inline-block">Intermediate (Computer Science)</span>
+                    <h3 class="text-2xl font-bold text-white mb-2">1047 / 1200 Marks</h3>
+                    <p class="text-[#2ecc71] font-medium mb-4">EQF Level 4</p>
+                    <p class="text-gray-400 text-sm mb-6">Daanish School Boys Hasilpur</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 text-sm text-gray-300"><i data-lucide="check-circle-2" class="text-[#2ecc71] w-4 h-4"></i><span>190 / 200 in Mathematics</span></div>
+                        <div class="flex items-center gap-3 text-sm text-gray-300"><i data-lucide="check-circle-2" class="text-[#2ecc71] w-4 h-4"></i><span>50 / 50 in Computer Practicals</span></div>
+                    </div>
+                </div>
+                <div class="p-8 rounded-3xl bg-[#1a1a1a] border border-gray-800 hover:scale-105 transition-transform relative overflow-hidden group">
+                    <span class="px-3 py-1 rounded-full bg-[#2ecc71]/10 text-[#2ecc71] text-[10px] font-bold uppercase tracking-widest mb-4 inline-block">Matriculation</span>
+                    <h3 class="text-2xl font-bold text-white mb-2">1042 / 1100 Marks</h3>
+                    <p class="text-gray-400 text-sm mb-6">Daanish School Boys Hasilpur</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 text-sm text-gray-300"><i data-lucide="check-circle-2" class="text-[#2ecc71] w-4 h-4"></i><span>150 / 150 in Mathematics</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- LEADERSHIP & EXPERIENCE SECTION --- -->
+        <section id="leadership" class="reveal reveal-right moving-section">
+            <div class="flex items-center justify-between mb-12">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-xl bg-[#2ecc71]/10 text-[#2ecc71] float-3d">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white">Leadership & Experience</h2>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 stagger-container">
+                <div class="p-6 rounded-2xl bg-[#1a1a1a] border border-gray-800 hover:border-[#2ecc71]/50 transition-all group">
+                    <h3 class="text-lg font-bold text-white mb-2 group-hover:text-[#2ecc71]">Assistant House Prefect</h3>
+                    <p class="text-[#2ecc71] text-xs font-mono mb-3">2024 - 2025</p>
+                    <p class="text-gray-400 text-sm">Managing student affairs and maintaining discipline within the house community.</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-[#1a1a1a] border border-gray-800 hover:border-[#2ecc71]/50 transition-all group">
+                    <h3 class="text-lg font-bold text-white mb-2 group-hover:text-[#2ecc71]">IT Club Member</h3>
+                    <p class="text-[#2ecc71] text-xs font-mono mb-3">2023 - 2025</p>
+                    <p class="text-gray-400 text-sm">Actively participating in tech workshops and organizing school-level IT events.</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-[#1a1a1a] border border-gray-800 hover:border-[#2ecc71]/50 transition-all group">
+                    <h3 class="text-lg font-bold text-white mb-2 group-hover:text-[#2ecc71]">Peer Mentor</h3>
+                    <p class="text-[#2ecc71] text-xs font-mono mb-3">2023 - 2025</p>
+                    <p class="text-gray-400 text-sm">Guiding juniors in academics and helping them adapt to the school environment.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- AWARDS & HONORS SECTION --- -->
+        <section id="awards" class="reveal reveal-left moving-section">
+            <div class="flex items-center justify-between mb-12">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-xl bg-[#2ecc71]/10 text-[#2ecc71] float-3d">
+                        <i data-lucide="medal"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white">Awards & Honors</h2>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 stagger-container">
+                <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#2ecc71]/20 hover:border-[#2ecc71]/50 transition-all relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="trophy" size="120"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">FSP Vibrant Youngsters</h3>
+                    <p class="text-[#2ecc71] font-mono text-sm mb-4">Mathematics Contest School Topper 2023</p>
+                    <p class="text-gray-400 text-sm">Achieved the highest score in the school for the prestigious national level mathematics competition.</p>
+                </div>
+                <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] border border-[#2ecc71]/20 hover:border-[#2ecc71]/50 transition-all relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="zap" size="120"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Athletics Excellence</h3>
+                    <p class="text-[#2ecc71] font-mono text-sm mb-4">400m & 200m Sprint Achievements</p>
+                    <p class="text-gray-400 text-sm">Demonstrated exceptional speed and endurance in track events, securing top positions in school athletics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- SKILLS SECTION --- -->
+        <section id="skills" class="grid md:grid-cols-2 gap-16 reveal reveal-zoom moving-section">
+            <div>
+                <div class="flex items-center justify-between mb-8">
+                    <div class="flex items-center gap-4">
+                        <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="code"></i></div>
+                        <h2 class="text-2xl font-bold text-white">Technical Arsenal</h2>
+                    </div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="skill-item" data-percent="45">
+                        <div class="flex justify-between mb-2"><span class="text-sm font-medium text-gray-300">Python</span><span class="text-xs text-[#2ecc71]">Beginner</span></div>
+                        <div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden"><div class="skill-progress h-full bg-[#2ecc71]"></div></div>
+                    </div>
+                    <div class="skill-item" data-percent="40">
+                        <div class="flex justify-between mb-2"><span class="text-sm font-medium text-gray-300">C Language</span><span class="text-xs text-[#2ecc71]">Basic</span></div>
+                        <div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden"><div class="skill-progress h-full bg-[#2ecc71]"></div></div>
+                    </div>
+                    <div class="skill-item" data-percent="35">
+                        <div class="flex justify-between mb-2"><span class="text-sm font-medium text-gray-300">JavaScript</span><span class="text-xs text-[#2ecc71]">Basic</span></div>
+                        <div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden"><div class="skill-progress h-full bg-[#2ecc71]"></div></div>
+                    </div>
+                    <div class="skill-item" data-percent="60">
+                        <div class="flex justify-between mb-2"><span class="text-sm font-medium text-gray-300">Web Dev</span><span class="text-xs text-[#2ecc71]">Intermediate</span></div>
+                        <div class="h-2 w-full bg-gray-800 rounded-full overflow-hidden"><div class="skill-progress h-full bg-[#2ecc71]"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col justify-center items-center">
+                <div class="relative w-64 h-64 flex items-center justify-center">
+                    <!-- 3D Animated Cube -->
+                    <div class="cube-wrapper">
+                        <div class="cube">
+                            <div class="face front">AI</div>
+                            <div class="face back">CODE</div>
+                            <div class="face right">DEV</div>
+                            <div class="face left">TECH</div>
+                            <div class="face top">DATA</div>
+                            <div class="face bottom">WEB</div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-6 text-[#2ecc71] font-mono text-sm">3D Technical Engine...</p>
+            </div>
+        </section>
+
+        <!-- --- PROJECTS SECTION --- -->
+        <section id="projects" class="reveal reveal-right relative moving-section">
+            <!-- Background 3D Animation -->
+            <div class="absolute -right-20 top-0 opacity-20 pointer-events-none hidden lg:block">
+                <div class="pyramid-wrapper">
+                    <div class="pyramid">
+                        <div class="p-face p-front"></div>
+                        <div class="p-face p-back"></div>
+                        <div class="p-face p-right"></div>
+                        <div class="p-face p-left"></div>
+                        <div class="p-face p-bottom"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between mb-12">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-xl bg-[#2ecc71]/10 text-[#2ecc71] float-3d"><i data-lucide="layers"></i></div>
+                    <h2 class="text-3xl font-bold text-white">Featured Projects</h2>
+                </div>
+            </div>
+
+            <div id="projects-list" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 stagger-container">
+                <!-- Add Project Button -->
+                <div onclick="openModal('project')" class="p-6 rounded-2xl border border-dashed border-gray-800 flex flex-col items-center justify-center min-h-[200px] text-gray-600 hover:border-[#2ecc71] transition-colors cursor-pointer group">
+                    <i data-lucide="plus" class="mb-2 group-hover:scale-125 transition-transform"></i>
+                    <p class="text-sm font-medium">Add New Project</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- CERTIFICATIONS SECTION --- -->
+        <section id="certifications" class="reveal reveal-up relative moving-section">
+            <!-- Background 3D Animation -->
+            <div class="absolute -left-20 top-0 opacity-20 pointer-events-none hidden lg:block">
+                <div class="ring-wrapper">
+                    <div class="ring"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-between mb-12">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 rounded-xl bg-[#2ecc71]/10 text-[#2ecc71] float-3d"><i data-lucide="award"></i></div>
+                    <h2 class="text-3xl font-bold text-white">Certifications</h2>
+                </div>
+            </div>
+
+            <div id="certs-list" class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 stagger-container">
+                <div class="p-4 rounded-xl bg-[#151515] border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all">
+                    <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="shield-check" size="20"></i></div>
+                    <div><h4 class="text-sm font-bold text-white">Intro to LLMs</h4><p class="text-[10px] text-gray-500">Google Cloud & Simplilearn</p></div>
+                </div>
+                <div class="p-4 rounded-xl bg-[#151515] border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all">
+                    <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="cloud" size="20"></i></div>
+                    <div><h4 class="text-sm font-bold text-white">Azure Fundamentals</h4><p class="text-[10px] text-gray-500">Microsoft & Simplilearn</p></div>
+                </div>
+                <div class="p-4 rounded-xl bg-[#151515] border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all">
+                    <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="globe" size="20"></i></div>
+                    <div><h4 class="text-sm font-bold text-white">AI for Social Impact</h4><p class="text-[10px] text-gray-500">ADB Institute</p></div>
+                </div>
+                <div class="p-4 rounded-xl bg-[#151515] border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all">
+                    <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="lock" size="20"></i></div>
+                    <div><h4 class="text-sm font-bold text-white">Cybersecurity</h4><p class="text-[10px] text-gray-500">ADB Institute</p></div>
+                </div>
+                <div class="p-4 rounded-xl bg-[#151515] border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all">
+                    <div class="p-2 rounded-lg bg-[#2ecc71]/10 text-[#2ecc71]"><i data-lucide="database" size="20"></i></div>
+                    <div><h4 class="text-sm font-bold text-white">Data Analysis</h4><p class="text-[10px] text-gray-500">Microsoft & Simplilearn</p></div>
+                </div>
+                <!-- Placeholder Slots -->
+                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
+                    <i data-lucide="plus" size="16"></i>
+                </div>
+                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
+                    <i data-lucide="plus" size="16"></i>
+                </div>
+                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
+                    <i data-lucide="plus" size="16"></i>
+                </div>
+                <div onclick="openModal('cert')" class="p-4 rounded-xl border border-dashed border-gray-800 flex items-center justify-center text-gray-700 hover:border-[#2ecc71] cursor-pointer transition-all">
+                    <i data-lucide="plus" size="16"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- --- CONTACT SECTION --- -->
+        <section id="contact" class="reveal reveal-up pt-20">
+            <div class="p-12 rounded-[40px] bg-gradient-to-br from-[#001f3f] to-[#000b1e] border border-gray-800 text-center relative overflow-hidden group">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-[#00f2ff] to-transparent"></div>
+                
+                <h2 class="text-4xl font-bold text-white mb-4">Let's Connect</h2>
+                <p class="text-gray-400 mb-12 max-w-xl mx-auto">I am looking forward to contributing my skills to a world-class university environment.</p>
+
+                <div class="flex flex-wrap justify-center gap-6 mb-12">
+                    <a href="mailto:adeelfalaksher900@gmail.com" class="flex items-center gap-3 px-8 py-4 rounded-full bg-gray-900 border border-gray-800 hover:border-[#2ecc71] hover:shadow-[0_0_20px_rgba(46,204,113,0.2)] transition-all group">
+                        <i data-lucide="mail" size="20" class="text-[#2ecc71]"></i><span class="text-sm font-medium">Email Me</span>
+                    </a>
+                    <a href="https://wa.me/923290627262" class="flex items-center gap-3 px-8 py-4 rounded-full bg-gray-900 border border-gray-800 hover:border-[#2ecc71] hover:shadow-[0_0_20px_rgba(46,204,113,0.2)] transition-all group">
+                        <i data-lucide="phone" size="20" class="text-[#2ecc71]"></i><span class="text-sm font-medium">WhatsApp</span>
+                    </a>
+                </div>
+
+                <div class="flex justify-center gap-8">
+                    <a href="https://www.linkedin.com/in/adeel-falak-sher-adeel900" target="_blank" class="text-gray-500 hover:text-[#2ecc71] hover:scale-125 transition-all"><i data-lucide="linkedin" size="28"></i></a>
+                    <a href="https://github.com/adeelfalaksher900-creator" target="_blank" class="text-gray-500 hover:text-[#2ecc71] hover:scale-125 transition-all"><i data-lucide="github" size="28"></i></a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- --- MODAL FOR ADDING ITEMS --- -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle" class="text-2xl font-bold text-white mb-4">Add New Item</h2>
+            <input type="text" id="itemName" placeholder="Title/Name">
+            <textarea id="itemDesc" placeholder="Description/Issuer" rows="3"></textarea>
+            <div class="flex justify-end gap-4 mt-6">
+                <button onclick="clearAllData()" class="text-red-500 hover:text-red-400 mr-auto text-xs">Clear All</button>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white">Cancel</button>
+                <button onclick="saveItem()" class="btn-primary">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- PROJECT DETAIL MODAL --- -->
+    <div id="projectDetailModal" class="modal">
+        <div class="modal-content border-[#00f2ff]/30">
+            <button onclick="closeProjectModal()" class="absolute top-6 right-6 text-gray-500 hover:text-white transition-colors">
+                <i data-lucide="x" size="24"></i>
+            </button>
+            <div id="projectDetailContent">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-10 border-t border-gray-900 text-center">
+        <p class="text-xs text-gray-600 tracking-widest uppercase">&copy; <span id="year"></span> ADEEL FALAK SHER. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        const typingElement = document.getElementById('typing-text');
+        const textToType = "Aspiring AI Enthusiast | Computer Scientist | Software Developer";
+        let index = 0;
+        function type() { if (index < textToType.length) { typingElement.textContent += textToType.charAt(index); index++; setTimeout(type, 50); } }
+
+        const charBox = document.getElementById('character-box');
+        const mainChar = document.getElementById('main-char');
+        const cardboard = document.getElementById('char-cardboard');
+        
+        const sections = ['education', 'leadership', 'awards', 'skills', 'projects', 'certifications', 'contact'];
+        
+        window.addEventListener('scroll', () => {
+            const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            charBox.style.left = `${scrollPercent * 0.8 + 5}%`;
+            
+            let currentSection = null;
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight / 2 && rect.bottom > window.innerHeight / 2) {
+                        currentSection = id;
+                    }
+                }
+            });
+
+            if (currentSection) {
+                mainChar.classList.add('showing-card');
+                cardboard.textContent = currentSection.toUpperCase();
+                if (currentSection === 'contact') {
+                    mainChar.classList.add('waving');
+                } else {
+                    mainChar.classList.remove('waving');
+                }
+            } else {
+                mainChar.classList.remove('showing-card');
+                mainChar.classList.remove('waving');
+            }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    entry.target.classList.add('visible');
+                    
+                    if (entry.target.classList.contains('reveal-zoom')) {
+                        document.querySelectorAll('.skill-item').forEach(item => {
+                            const bar = item.querySelector('.skill-progress');
+                            bar.style.width = item.getAttribute('data-percent') + '%';
+                        });
+                    }
+                }
+            });
+        }, { threshold: 0.15 });
+
+        // Modal Logic
+        let currentType = '';
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all added projects and certifications?')) {
+                localStorage.removeItem('portfolioItems');
+                localStorage.setItem('portfolio_initialized', 'true');
+                renderItems();
+                closeModal();
+            }
+        }
+
+        function openModal(type) { currentType = type; document.getElementById('modalTitle').innerText = `Add New ${type === 'project' ? 'Project' : 'Certificate'}`; document.getElementById('addModal').style.display = 'block'; }
+        function closeModal() { document.getElementById('addModal').style.display = 'none'; }
+        
+        function saveItem() {
+            const name = document.getElementById('itemName').value;
+            const desc = document.getElementById('itemDesc').value;
+            if (!name || !desc) return alert('Please fill all fields');
+
+            const item = { id: Date.now().toString(), name, desc, type: currentType };
+            const items = JSON.parse(localStorage.getItem('portfolioItems') || '[]');
+            items.push(item);
+            localStorage.setItem('portfolioItems', JSON.stringify(items));
+            
+            renderItems();
+            closeModal();
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemDesc').value = '';
+        }
+
+        function showProjectDetails(name, desc, link) {
+            const modal = document.getElementById('projectDetailModal');
+            const content = document.getElementById('projectDetailContent');
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-white mb-4">${name}</h2>
+                <p class="text-gray-400 leading-relaxed mb-8">${desc}</p>
+                <div class="flex gap-4">
+                    <a href="${link}" target="_blank" class="flex-grow py-3 rounded-xl bg-[#00f2ff] text-[#000b1e] font-bold text-center hover:shadow-[0_0_20px_rgba(0,242,255,0.4)] transition-all">Live Demo</a>
+                    <button onclick="closeProjectModal()" class="px-6 py-3 rounded-xl bg-gray-900 border border-gray-800 text-white font-bold hover:bg-gray-800 transition-all">Close</button>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectDetailModal').style.display = 'none';
+        }
+
+        function deleteItem(id) {
+            let items = JSON.parse(localStorage.getItem('portfolioItems') || '[]');
+            // Robust deletion: check both ID and stringified ID
+            items = items.filter(item => String(item.id) !== String(id));
+            localStorage.setItem('portfolioItems', JSON.stringify(items));
+            renderItems();
+        }
+
+        function renderItems() {
+            let items = JSON.parse(localStorage.getItem('portfolioItems') || '[]');
+            
+            // Initialize with default if empty (first time)
+            if (items.length === 0 && !localStorage.getItem('portfolio_initialized')) {
+                items = [
+                    { id: 'default-1', type: 'project', name: 'EverGlow AI', desc: 'AI skincare analysis tool using Deep Learning (CNN). It analyzes skin conditions from uploaded photos and provides personalized recommendations.' }
+                ];
+                localStorage.setItem('portfolioItems', JSON.stringify(items));
+                localStorage.setItem('portfolio_initialized', 'true');
+            }
+
+            const projectList = document.getElementById('projects-list');
+            const certList = document.getElementById('certs-list');
+            
+            // Clear existing dynamic items (keep the "Add" buttons)
+            document.querySelectorAll('.dynamic-item').forEach(el => el.remove());
+
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'dynamic-item';
+                if (item.type === 'project') {
+                    div.innerHTML = `<div class="relative group h-full">
+                        <div onclick="showProjectDetails('${item.name.replace(/'/g, "\\'")}', '${item.desc.replace(/'/g, "\\'")}', '#')" class="project-card p-6 rounded-2xl bg-[#001f3f]/50 border border-[#00f2ff]/30 flex flex-col group h-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="text-xl font-bold text-white group-hover:text-[#00f2ff] transition-colors">${item.name}</h3>
+                                <div class="text-[#00f2ff] external-link-icon transition-all"><i data-lucide="external-link" size="18"></i></div>
+                            </div>
+                            <p class="text-gray-400 text-sm mb-6 flex-grow">${item.desc}</p>
+                        </div>
+                        <button onclick="deleteItem('${item.id}')" class="absolute -top-2 -right-2 p-2 bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10">
+                            <i data-lucide="trash-2" size="14"></i>
+                        </button>
+                    </div>`;
+                    projectList.insertBefore(div, projectList.lastElementChild);
+                } else {
+                    div.innerHTML = `<div class="relative group h-full">
+                        <div class="p-4 rounded-xl bg-[#001f3f]/50 border border-gray-800 flex items-center gap-4 hover:scale-105 transition-all h-full">
+                            <div class="p-2 rounded-lg bg-[#00f2ff]/10 text-[#00f2ff]"><i data-lucide="award" size="20"></i></div>
+                            <div><h4 class="text-sm font-bold text-white">${item.name}</h4><p class="text-[10px] text-gray-500">${item.desc}</p></div>
+                        </div>
+                        <button onclick="deleteItem('${item.id}')" class="absolute -top-2 -right-2 p-2 bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10">
+                            <i data-lucide="trash-2" size="14"></i>
+                        </button>
+                    </div>`;
+                    certList.insertBefore(div, certList.lastElementChild);
+                }
+            });
+            lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(type, 1000);
+            document.querySelectorAll('.fade-in, .reveal, .stagger-container').forEach(el => observer.observe(el));
+            document.getElementById('year').textContent = new Date().getFullYear();
+            renderItems();
+        });
+    </script>
+</body>
+</html>
